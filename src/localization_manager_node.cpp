@@ -7,7 +7,10 @@ int main(int argc, char** argv)
 
     ros::Rate rate(10);
 
-    LocalizationManager localization_manager;
+    tf2_ros::Buffer tf_buffer;
+    tf2_ros::TransformListener tfListener(tf_buffer);
+
+    LocalizationManager localization_manager(&nh, &rate, &tf_buffer);
 
     while(ros::ok())
     {
