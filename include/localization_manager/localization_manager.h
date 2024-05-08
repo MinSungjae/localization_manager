@@ -19,26 +19,33 @@ private:
 
     ros::Publisher managed_loc_pub;
 
+    tf2_ros::TransformBroadcaster managed_base_link_brd, world2odom_brd;
+
     void relative_loc_cb(nav_msgs::Odometry msg);
-    void absolute_loc_cb(nav_msgs::Odometry msg);
+    void absolute_loc_cb(geometry_msgs::PoseStamped msg);
 
     tf2_ros::Buffer* _tf_buffer;
 
 protected:
-    nav_msgs::Odometry relative_odom, absolute_odom, managed_odom;
+    nav_msgs::Odometry relative_odom, managed_odom;
+    geometry_msgs::PoseStamped absolute_loc;
     geometry_msgs::TransformStamped base2cam;
+
+    tf2::Transform base2cam_tf;
 
 public:
     LocalizationManager(ros::NodeHandle* nh, ros::Rate* rate, tf2_ros::Buffer* buffer): _nh(nh), _rate(rate), _tf_buffer(buffer)
     {
         relative_loc_sub = _nh->subscribe("orb_odom", 1, &LocalizationManager::relative_loc_cb, this);
-        absolute_loc_sub = _nh->subscribe("tag_localization", 1, &LocalizationManager::absolute_loc_cb, this);
+        absolute_loc_sub = _nh->subscribe("camera_link", 1, &LocalizationManager::absolute_loc_cb, this);
         managed_loc_pub = _nh->advertise<nav_msgs::Odometry>("odom", 1);
 
         while (_nh->ok())
         {
             try{
-                base2cam = _tf_buffer->lookupTransform("camera_base_link", "base_link", ros::Time(0));
+                base2cam = _tf_buffer->lookupTransform("camera_link", "base_link", ros::Time(0));
+                tf2::fromMsg(base2cam.transform, base2cam_tf);
+                ROS_INFO("Got robot to camera transform...");
                 break;
             }
             catch(tf2::TransformException &ex) {
