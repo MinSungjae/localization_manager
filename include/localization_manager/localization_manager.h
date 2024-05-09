@@ -40,7 +40,7 @@ public:
         absolute_loc_sub = _nh->subscribe("camera_link", 1, &LocalizationManager::absolute_loc_cb, this);
         managed_loc_pub = _nh->advertise<nav_msgs::Odometry>("odom", 1);
 
-        while (_nh->ok())
+        while (ros::ok())
         {
             try{
                 base2cam = _tf_buffer->lookupTransform("camera_link", "base_link", ros::Time(0));
