@@ -19,7 +19,7 @@ private:
 
     ros::Publisher managed_loc_pub;
 
-    tf2_ros::TransformBroadcaster managed_base_link_brd, world2odom_brd;
+    tf2_ros::TransformBroadcaster managed_base_link_brd, world2map_brd;
 
     void relative_loc_cb(nav_msgs::Odometry msg);
     void absolute_loc_cb(geometry_msgs::PoseStamped msg);
@@ -32,6 +32,10 @@ protected:
     geometry_msgs::TransformStamped base2cam;
 
     tf2::Transform base2cam_tf;
+
+    geometry_msgs::PoseStamped odom_frame;
+
+    tf2::Transform world2map_tf;
 
 public:
     LocalizationManager(ros::NodeHandle* nh, ros::Rate* rate, tf2_ros::Buffer* buffer): _nh(nh), _rate(rate), _tf_buffer(buffer)
@@ -54,6 +58,9 @@ public:
                 continue;
             }
         }
+
+        // Initial guess for transformation between world and map frames
+        world2map_tf.setIdentity();
     }
 
     bool localize();
