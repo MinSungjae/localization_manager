@@ -66,7 +66,6 @@ bool LocalizationManager::localize()
     managed_odom.pose.pose.position.y = managed_base_link.transform.translation.y;
     managed_odom.pose.pose.position.z = managed_base_link.transform.translation.z;
     managed_odom.pose.pose.orientation = managed_base_link.transform.rotation;
-
     managed_loc_pub.publish(managed_odom);
 
     // tf2::Transform absolute_loc_tf;
