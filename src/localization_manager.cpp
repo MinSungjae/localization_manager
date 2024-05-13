@@ -2,6 +2,8 @@
 
 void LocalizationManager::relative_loc_cb(nav_msgs::Odometry msg)
 {
+    last_relative_loc = ros::Time::now();
+
     relative_odom = msg;
 }
 
@@ -14,11 +16,17 @@ bool LocalizationManager::localize()
 {
     ros::Time now = ros::Time::now();
     geometry_msgs::PoseStamped base_link;
-    base_link.header.frame_id = "world"; // or map
+    base_link.header.frame_id = world_frame_name; // or map
     base_link.header.stamp = now;
 
-    odom_frame.header.frame_id = "world";
+    odom_frame.header.frame_id = world_frame_name;
     odom_frame.header.stamp = now;
+
+    if(now - last_relative_loc > ros::Duration(1.0))
+        relative_odom_fail.data = true;
+    else
+        relative_odom_fail.data = false;
+    relative_odom_fail_pub.publish(relative_odom_fail);
 
     // Type conversion to tf2::Transform for easy computation
     tf2::Transform relative_loc_tf;
@@ -52,7 +60,7 @@ bool LocalizationManager::localize()
 
     geometry_msgs::TransformStamped world2map;
     world2map.header = odom_frame.header;
-    world2map.child_frame_id = "map";
+    world2map.child_frame_id = relative_frame_name;
     world2map.transform.translation.x = odom_frame.pose.position.x;
     world2map.transform.translation.y = odom_frame.pose.position.y;
     world2map.transform.translation.z = odom_frame.pose.position.z;
@@ -61,7 +69,7 @@ bool LocalizationManager::localize()
 
     // Publish resultant odometry w.r.t. World frame
     managed_odom.header.stamp = now;
-    managed_odom.header.frame_id = "world";
+    managed_odom.header.frame_id = world_frame_name;
     managed_odom.pose.pose.position.x = managed_base_link.transform.translation.x;
     managed_odom.pose.pose.position.y = managed_base_link.transform.translation.y;
     managed_odom.pose.pose.position.z = managed_base_link.transform.translation.z;
