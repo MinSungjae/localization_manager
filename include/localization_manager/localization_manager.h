@@ -21,7 +21,7 @@ private:
     ros::Publisher managed_loc_pub;
     ros::Publisher relative_odom_fail_pub;
 
-    tf2_ros::TransformBroadcaster managed_base_link_brd, world2map_brd;
+    tf2_ros::TransformBroadcaster managed_base_link_brd, map2odom_brd;
 
     void relative_loc_cb(nav_msgs::Odometry msg);
     void absolute_loc_cb(geometry_msgs::PoseStamped msg);
@@ -33,7 +33,7 @@ private:
 
 protected:
     ros::Time last_relative_loc;
-    nav_msgs::Odometry relative_odom, managed_odom;
+    nav_msgs::Odometry relative_odom, managed_odom, latest_relative_odom;
     geometry_msgs::PoseStamped absolute_loc;
     geometry_msgs::TransformStamped base2cam;
 
@@ -41,9 +41,12 @@ protected:
 
     geometry_msgs::PoseStamped odom_frame;
 
-    tf2::Transform world2map_tf;
+    tf2::Transform map2odom_tf;
 
     std_msgs::Bool relative_odom_fail;
+
+    bool relative_loc_losted = false;
+    bool absolute_loc_found = true;
 
 public:
     LocalizationManager(ros::NodeHandle* nh, ros::Rate* rate, tf2_ros::Buffer* buffer): _nh(nh), _rate(rate), _tf_buffer(buffer)
@@ -74,7 +77,7 @@ public:
         }
 
         // Initial guess for transformation between world and map frames
-        world2map_tf.setIdentity();
+        map2odom_tf.setIdentity();
         relative_odom_fail.data = false;
     }
 

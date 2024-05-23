@@ -5,7 +5,7 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "localization_manager");
     ros::NodeHandle nh;
 
-    ros::Rate rate(10);
+    ros::Rate rate(30);
 
     tf2_ros::Buffer tf_buffer;
     tf2_ros::TransformListener tfListener(tf_buffer);

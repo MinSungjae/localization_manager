@@ -1,8 +1,11 @@
 <launch>
-    <arg name="world_frame_name" default="world"/>
-    <arg name="relative_frame_name" default="map"/>
+    <arg name="world_frame_name" default="map"/>
+    <arg name="relative_frame_name" default="odom"/>
 
     <node name="localization_manager_node" pkg="localization_manager" type="localization_manager_node" output="screen">
         <param name="world_frame_name" value="$(arg world_frame_name)"/>
     </node>
+
+    <node pkg="tf" type="static_transform_publisher" name="map2odom" args="0.0 0.00 0.0 0.0 0.0 0.0 map odom 1000"/>
+
 </launch>
