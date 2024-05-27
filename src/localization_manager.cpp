@@ -91,15 +91,15 @@ bool LocalizationManager::localize()
     map2odom.transform.rotation = odom_frame.pose.orientation;
     map2odom_brd.sendTransform(map2odom);
 
-    // Publish resultant odometry w.r.t. World frame
-    // managed_odom.header.stamp = now;
-    // managed_odom.header.frame_id = "odom";
-    // managed_odom.child_frame_id = ""
-    // managed_odom.pose.pose.position.x = managed_base_link.transform.translation.x;
-    // managed_odom.pose.pose.position.y = managed_base_link.transform.translation.y;
-    // managed_odom.pose.pose.position.z = managed_base_link.transform.translation.z;
-    // managed_odom.pose.pose.orientation = managed_base_link.transform.rotation;
-    // managed_loc_pub.publish(managed_odom);
+    //Publish resultant odometry w.r.t. World frame
+    managed_odom.header.stamp = now;
+    managed_odom.header.frame_id = "odom";
+    managed_odom.child_frame_id = "base_link";
+    managed_odom.pose.pose.position.x = managed_base_link.transform.translation.x;
+    managed_odom.pose.pose.position.y = managed_base_link.transform.translation.y;
+    managed_odom.pose.pose.position.z = managed_base_link.transform.translation.z;
+    managed_odom.pose.pose.orientation = managed_base_link.transform.rotation;
+    managed_loc_pub.publish(managed_odom);
 
     // tf2::Transform absolute_loc_tf;
     // tf2::fromMsg(absolute_loc.pose, absolute_loc_tf);
