@@ -139,4 +139,5 @@ bool LocalizationManager::localize()
     // managed_odom.pose.pose.orientation = managed_base_link.transform.rotation;
 
     // managed_loc_pub.publish(managed_odom);
+    return true;
 }
